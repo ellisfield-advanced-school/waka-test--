@@ -3,82 +3,523 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>高校生向け 英単語4択テスト</title>
+    <title>濱田和花・4択英単語テスト</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
-        .quiz-container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }
-        .btn { display: block; width: 100%; margin: 10px 0; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; text-align: left; font-size: 16px; }
-        .btn:hover { background-color: #0056b3; }
-        #result { font-weight: bold; font-size: 18px; margin-top: 20px; }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 { font-size: 20px; color: #333; margin-top: 0; }
+        .japanese { font-size: 24px; font-weight: bold; color: #333; margin: 20px 0; word-break: break-all; }
+        .progress { color: #666; font-size: 14px; margin-bottom: 15px; }
+        .btn {
+            background-color: white;
+            color: #333;
+            border: 2px solid #e0e0e0;
+            padding: 14px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 12px;
+            font-weight: bold;
+            text-align: center;
+            box-sizing: border-box;
+            transition: background-color 0.2s;
+        }
+        .btn:hover { background-color: #f7f9fa; }
+        .choice-btn { font-size: 18px; letter-spacing: 0.5px; }
+        .action-btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        .result-message { font-size: 18px; font-weight: bold; margin: 15px 0; }
+        .correct { color: #2ecc71; border-color: #2ecc71 !important; background-color: #eafeec; }
+        .incorrect { color: #e74c3c; border-color: #e74c3c !important; background-color: #fdedec; }
     </style>
 </head>
 <body>
-
+ 
 <div class="quiz-container">
-    <h2>英単語テスト（高校生レベル）</h2>
-    <div id="question" style="font-size: 24px; margin-bottom: 20px; font-weight: bold;"></div>
-    <div id="choices"></div>
-    <div id="result"></div>
+    <div id="category-screen">
+        <div style="font-size: 16px; color: #555; font-weight: bold; margin-bottom: 5px; text-align: center;">エリスフィールド進学会</div>
+        <h1>テストするカテゴリを選んでね</h1>
+        <div id="category-list"></div>
+    </div>
+ 
+    <div id="quiz-screen" style="display: none;">
+        <div class="progress" id="progress">第 1 問 / 全 10 問</div>
+        <div class="japanese" id="japanese-word">日本語</div>
+ 
+        <button onclick="speakWord()" class="btn"
+            style="margin-bottom:20px;max-width:200px;margin-left:auto;
+            margin-right:auto;padding:10px;font-size:16px;">
+            🔊 発音を聞く
+        </button>
+ 
+        <div id="choices-list"></div>
+ 
+        <div class="result-message" id="result-message"></div>
+ 
+        <button onclick="nextQuestion()" id="next-btn" class="action-btn" style="display:none;">
+            次へ進む
+        </button>
+    </div>
+ 
+    <div id="result-screen" style="display: none;">
+        <h2>テスト終了！</h2>
+        <p id="final-score" style="font-size: 18px; font-weight: bold;"></p>
+        <button onclick="showCategoryScreen()" class="action-btn">
+            別のテストを選ぶ
+        </button>
+    </div>
 </div>
-
+ 
 <script>
-    // ★ここに高校生向けの単語、選択肢、正解（optionsの中の同じ文字列）を設定します
-    const quizData = [
-        {
-            question: "analyze",
-            options: ["を分析する", "を麻痺させる", "を統合する", "を誇張する"],
-            answer: "を分析する"
-        },
-        {
-            question: "consequence",
-            options: ["原因", "結果・影響", "意識", "動機"],
-            answer: "結果・影響"
-        },
-        {
-            question: "critical",
-            options: ["好意的な", "些細な", "批判的な・重大な", "楽観的な"],
-            answer: "批判的な・重大な"
-        }
-    ];
+const wordData = {
+    "曜日・週": [
+        { english: "Monday", japanese: "月曜日" }, { english: "Tuesday", japanese: "火曜日" },
+        { english: "Wednesday", japanese: "水曜日" }, { english: "Thursday", japanese: "木曜日" },
+        { english: "Friday", japanese: "金曜日" }, { english: "Saturday", japanese: "土曜日" },
+        { english: "Sunday", japanese: "日曜日" }, { english: "weekend", japanese: "週末" }, 
+        { english: "this week", japanese: "今週" }, { english: "last week", japanese: "先週" }, 
+        { english: "next week", japanese: "来週" }
+    ],
+    "1月〜12月": [
+        { english: "January", japanese: "1月" }, { english: "February", japanese: "2月" },
+        { english: "March", japanese: "3月" }, { english: "April", japanese: "4月" },
+        { english: "May", japanese: "5月" }, { english: "June", japanese: "6月" },
+        { english: "July", japanese: "7月" }, { english: "August", japanese: "8月" },
+        { english: "September", japanese: "9月" }, { english: "October", japanese: "10月" },
+        { english: "November", japanese: "11月" }, { english: "December", japanese: "12月" }, 
+        { english: "this month", japanese: "今月" }, { english: "last month", japanese: "先月" }, 
+        { english: "next month", japanese: "来月" }
+    ],
+};
 
-    let currentQuiz = 0;
+// ①不規則動詞 (過去形) 一括追加
+wordData["不規則動詞 (過去形)"] = [
+    { english: "cut", japanese: "cut (~を切る) の過去形", ing: "cutting" },
+    { english: "put", japanese: "put (~を置く) の過去形", ing: "putting" },
+    { english: "became", japanese: "become (~になる) の過去形", ing: "becoming" },
+    { english: "came", japanese: "come (来る) の過去形", ing: "coming" },
+    { english: "ran", japanese: "run (走る) の過去形", ing: "running" },
+    { english: "slept", japanese: "sleep (眠る) の過去形", ing: "sleeping" },
+    { english: "spent", japanese: "spend (~を過ごす) の過去形", ing: "spending" },
+    { english: "stood", japanese: "stand (立っている) の過去形", ing: "standing" },
+    { english: "taught", japanese: "teach (~を教える) の過去形", ing: "teaching" },
+    { english: "told", japanese: "tell (~に話す) の過去形", ing: "telling" },
+    { english: "thought", japanese: "think (~と考える) の過去形", ing: "thinking" },
+    { english: "understood", japanese: "understand (~を理解する) の過去形", ing: "understanding" },
+    { english: "won", japanese: "win (勝つ) の過去形", ing: "winning" },
+    { english: "brought", japanese: "bring (~を持ってくる) の過去形", ing: "bringing" },
+    { english: "built", japanese: "build (~を建てる) の過去形", ing: "building" },
+    { english: "bought", japanese: "buy (~を買う) の過去形", ing: "buying" },
+    { english: "caught", japanese: "catch (~をつかまえる) の過去形", ing: "catching" },
+    { english: "felt", japanese: "feel (感じる) の過去形", ing: "feeling" },
+    { english: "found", japanese: "find (~を見つける) の過去形", ing: "finding" },
+    { english: "had", japanese: "have (~を持っている) の過去形", ing: "having" },
+    { english: "heard", japanese: "hear (~が聞こえる) の過去形", ing: "hearing" },
+    { english: "kept", japanese: "keep (~を持ち続ける) の過去形", ing: "keeping" },
+    { english: "learned", japanese: "learn (~を学ぶ) の過去形", ing: "learning" },
+    { english: "left", japanese: "leave (去る) の過去形", ing: "leaving" },
+    { english: "lost", japanese: "lose (~を失う) の過去形", ing: "losing" },
+    { english: "made", japanese: "make (~を作る) の過去形", ing: "making" },
+    { english: "met", japanese: "meet (~と会う) の過去形", ing: "meeting" },
+    { english: "paid", japanese: "pay (~を支払う) の過去形", ing: "paying" },
+    { english: "read", japanese: "read (~を読む) の過去形", ing: "reading" },
+    { english: "said", japanese: "say (~と言う) の過去形", ing: "saying" },
+    { english: "sold", japanese: "sell (~を売る) の過去形", ing: "selling" },
+    { english: "sent", japanese: "send (~を送る) の過去形", ing: "sending" },
+    { english: "sat", japanese: "sit (座る) の過去形", ing: "sitting" },
+    { english: "began", japanese: "begin (~を始める) の過去形", ing: "beginning" },
+    { english: "broke", japanese: "break (~をこわす) の過去形", ing: "breaking" },
+    { english: "did", japanese: "do、does (~をする) の過去形", ing: "doing" },
+    { english: "drank", japanese: "drink (~を飲む) の過去形", ing: "drinking" },
+    { english: "drove", japanese: "drive (~を運転する) の過去形", ing: "driving" },
+    { english: "ate", japanese: "eat (~を食べる) の過去形", ing: "eating" },
+    { english: "got", japanese: "get (~を得る) の過去形", ing: "getting" },
+    { english: "gave", japanese: "give (~を与える) の過去形", ing: "giving" },
+    { english: "went", japanese: "go (行く) の過去形", ing: "going" },
+    { english: "knew", japanese: "know (~を知っている) の過去形", ing: "knowing" },
+    { english: "rose", japanese: "rise (昇る) の過去形", ing: "rising" },
+    { english: "saw", japanese: "see (見える) の過去形", ing: "seeing" },
+    { english: "showed", japanese: "show (~を見せる) の過去形", ing: "showing" },
+    { english: "sang", japanese: "sing (歌う) の過去形", ing: "singing" },
+    { english: "spoke", japanese: "speak (話す) の過去形", ing: "speaking" },
+    { english: "swam", japanese: "swim (泳ぐ) の過去形", ing: "swimming" },
+    { english: "took", japanese: "take (~を取る) の過去形", ing: "taking" },
+    { english: "woke", japanese: "wake (目を覚ます) の過去形", ing: "waking" },
+    { english: "wore", japanese: "wear (~を着ている) の過去形", ing: "wearing" },
+    { english: "wrote", japanese: "write (~を書く) の過去形", ing: "writing" }
+];
+ 
+// ②不規則動詞 (過去分詞) 一括追加
+wordData["不規則動詞 (過去分詞)"] = [
+    { english: "cut", japanese: "cut (~を切る) の過去分詞", ing: "cutting" },
+    { english: "put", japanese: "put (~を置く) の過去分詞", ing: "putting" },
+    { english: "become", japanese: "become (~になる) の過去分詞", ing: "becoming" },
+    { english: "come", japanese: "come (来る) の過去分詞", ing: "coming" },
+    { english: "run", japanese: "run (走る) の過去分詞", ing: "running" },
+    { english: "slept", japanese: "sleep (眠る) の過去分詞", ing: "sleeping" },
+    { english: "spent", japanese: "spend (~を過ごす) の過去分詞", ing: "spending" },
+    { english: "stood", japanese: "stand (立っている) の過去分詞", ing: "standing" },
+    { english: "taught", japanese: "teach (~を教える) の過去分詞", ing: "teaching" },
+    { english: "told", japanese: "tell (~に話す) の過去分詞", ing: "telling" },
+    { english: "thought", japanese: "think (~と考える) の過去分詞", ing: "thinking" },
+    { english: "understood", japanese: "understand (~を理解する) の過去分詞", ing: "understanding" },
+    { english: "won", japanese: "win (勝つ) の過去分詞", ing: "winning" },
+    { english: "brought", japanese: "bring (~を持ってくる) の過去分詞", ing: "bringing" },
+    { english: "built", japanese: "build (~を建てる) の過去分詞", ing: "building" },
+    { english: "bought", japanese: "buy (~を買う) の過去分詞", ing: "buying" },
+    { english: "caught", japanese: "catch (~をつかまえる) の過去分詞", ing: "catching" },
+    { english: "felt", japanese: "feel (感じる) の過去分詞", ing: "feeling" },
+    { english: "found", japanese: "find (~を見つける) の過去分詞", ing: "finding" },
+    { english: "had", japanese: "have (~を持っている) の過去分詞", ing: "having" },
+    { english: "heard", japanese: "hear (~が聞こえる) の過去分詞", ing: "hearing" },
+    { english: "kept", japanese: "keep (~を持ち続ける) の過去分詞", ing: "keeping" },
+    { english: "learned (learnt)", japanese: "learn (~を学ぶ) の過去分詞", ing: "learning" },
+    { english: "left", japanese: "leave (去る) の過去分詞", ing: "leaving" },
+    { english: "lost", japanese: "lose (~を失う) の過去分詞", ing: "losing" },
+    { english: "made", japanese: "make (~を作る) の過去分詞", ing: "making" },
+    { english: "met", japanese: "meet (~と会う) の過去分詞", ing: "meeting" },
+    { english: "paid", japanese: "pay (~を支払う) の過去分詞", ing: "paying" },
+    { english: "read", japanese: "read (~を読む) の過去分詞", ing: "reading" },
+    { english: "said", japanese: "say (~と言う) の過去分詞", ing: "saying" },
+    { english: "sold", japanese: "sell (~を売る) の過去分詞", ing: "selling" },
+    { english: "sent", japanese: "send (~を送る) の過去分詞", ing: "sending" },
+    { english: "sat", japanese: "sit (座る) の過去分詞", ing: "sitting" },
+    { english: "begun", japanese: "begin (~を始める) の過去分詞", ing: "beginning" },
+    { english: "broken", japanese: "break (~をこわす) の過去分詞", ing: "breaking" },
+    { english: "done", japanese: "do、does (~をする) の過去分詞", ing: "doing" },
+    { english: "drunk", japanese: "drink (~を飲む) の過去分詞", ing: "drinking" },
+    { english: "driven", japanese: "drive (~を運転する) の過去分詞", ing: "driving" },
+    { english: "eaten", japanese: "eat (~を食べる) の過去分詞", ing: "eating" },
+    { english: "got (gotten)", japanese: "get (~を得る) の過去分詞", ing: "getting" },
+    { english: "given", japanese: "give (~を与える) の過去分詞", ing: "giving" },
+    { english: "gone", japanese: "go (行く) の過去分詞", ing: "going" },
+    { english: "known", japanese: "know (~を知っている) の過去分詞", ing: "knowing" },
+    { english: "risen", japanese: "rise (昇る) の過去分詞", ing: "rising" },
+    { english: "seen", japanese: "see (見える) の過去分詞", ing: "seeing" },
+    { english: "shown (showed)", japanese: "show (~を見せる) の過去分詞", ing: "showing" },
+    { english: "sung", japanese: "sing (歌う) の過去分詞", ing: "singing" },
+    { english: "spoken", japanese: "speak (話す) の過去分詞", ing: "speaking" },
+    { english: "swum", japanese: "swim (泳ぐ) の過去分詞", ing: "swimming" },
+    { english: "taken", japanese: "take (~を取る) の過去分詞", ing: "taking" },
+    { english: "woken", japanese: "wake (目を覚ます) の過去分詞", ing: "waking" },
+    { english: "worn", japanese: "wear (~を着ている) の過去分詞", ing: "wearing" },
+    { english: "written", japanese: "write (~を書く) の過去分詞", ing: "writing" }
+];
+ 
+// ③形容詞・副詞 (比較級) 一括追加
+wordData["形容詞・副詞 (比較級)"] = [
+    { english: "cheaper", japanese: "cheap (安い) の比較級" },
+    { english: "cleaner", japanese: "clean (きれいな) の比較級" },
+    { english: "colder", japanese: "cold (寒い) の比較級" },
+    { english: "cooler", japanese: "cool (涼しい) の比較級" },
+    { english: "faster", japanese: "fast (速い・速く) の比較級" },
+    { english: "greater", japanese: "great (すごい) の比較級" },
+    { english: "harder", japanese: "hard (難しい) の比較級" },
+    { english: "higher", japanese: "high (高い) の比較級" },
+    { english: "lighter", japanese: "light (明るい・軽い) の比較級" },
+    { english: "longer", japanese: "long (長い) の比較級" },
+    { english: "nearer", japanese: "near (近い) の比較級" },
+    { english: "newer", japanese: "new (新しい) の比較級" },
+    { english: "older", japanese: "old (古い) の比較級" },
+    { english: "shorter", japanese: "short (短い) の比較級" },
+    { english: "smaller", japanese: "small (小さい) の比較級" },
+    { english: "stronger", japanese: "strong (強い) の比較級" },
+    { english: "taller", japanese: "tall (背が高い) の比較級" },
+    { english: "warmer", japanese: "warm (暖かい) の比較級" },
+    { english: "younger", japanese: "young (若い) の比較級" },
+    { english: "larger", japanese: "large (大きい) の比較級" },
+    { english: "later", japanese: "late (遅い) の比較級" },
+    { english: "bigger", japanese: "big (大きい) の比較級" },
+    { english: "hotter", japanese: "hot (暑い・熱い) の比較級" },
+    { english: "busier", japanese: "busy (忙しい) の比較級" },
+    { english: "earlier", japanese: "early (早く) の比較級" },
+    { english: "easier", japanese: "easy (簡単な) の比較級" },
+    { english: "happier", japanese: "happy (幸せな) の比較級" },
+    { english: "heavier", japanese: "heavy (重い) の比較級" },
+    { english: "prettier", japanese: "pretty (かわいい) の比較級" },
+    { english: "more beautiful", japanese: "beautiful (美しい) の比較級" },
+    { english: "more careful", japanese: "careful (注意深い) の比較級" },
+    { english: "more delicious", japanese: "delicious (おいしい) の比較級" },
+    { english: "more difficult", japanese: "difficult (難しい) の比較級" },
+    { english: "more easily", japanese: "easily (簡単に) の比較級" },
+    { english: "more exciting", japanese: "exciting (わくわくする) の比較級" },
+    { english: "more expensive", japanese: "expensive (高価な) の比較級" },
+    { english: "more famous", japanese: "famous (有名な) の比較級" },
+    { english: "more important", japanese: "important (重要な) の比較級" },
+    { english: "more interesting", japanese: "interesting (おもしろい) の比較級" },
+    { english: "more popular", japanese: "popular (人気のある) の比較級" },
+    { english: "more useful", japanese: "useful (便利な) の比較級" },
+    { english: "better", japanese: "good (良い) / well (元気に・上手に) の比較級" },
+    { english: "worse", japanese: "bad (悪い) / ill (病気の) の比較級" },
+    { english: "more", japanese: "many (多い[数]) / much (多い[量]) の比較級" },
+    { english: "less", japanese: "little (少しの[量]) の比較級" }
+];
+ 
+// ④形容詞・副詞 (最上級) 一括追加
+wordData["形容詞・副詞 (最上級)"] = [
+    { english: "the cheapest", japanese: "cheap (安い) の最上級" },
+    { english: "the cleanest", japanese: "clean (きれいな) の最上級" },
+    { english: "the coldest", japanese: "cold (寒い) の最上級" },
+    { english: "the coolest", japanese: "cool (涼しい) の最上級" },
+    { english: "the fastest", japanese: "fast (速い・速く) の最上級" },
+    { english: "the greatest", japanese: "great (すごい) の最上級" },
+    { english: "the hardest", japanese: "hard (難しい) の最上級" },
+    { english: "the highest", japanese: "high (高い) の最上級" },
+    { english: "the lightest", japanese: "light (明るい・軽い) の最上級" },
+    { english: "the longest", japanese: "long (長い) の最上級" },
+    { english: "the nearest", japanese: "near (近い) の最上級" },
+    { english: "the newest", japanese: "new (新しい) の最上級" },
+    { english: "the oldest", japanese: "old (古い) の最上級" },
+    { english: "the shortest", japanese: "short (短い) の最上級" },
+    { english: "the smallest", japanese: "small (小さい) の最上級" },
+    { english: "the strongest", japanese: "strong (強い) の最上級" },
+    { english: "the tallest", japanese: "tall (背が高い) の最上級" },
+    { english: "the warmest", japanese: "warm (暖かい) の最上級" },
+    { english: "the youngest", japanese: "young (若い) の最上級" },
+    { english: "the largest", japanese: "large (大きい) の最上級" },
+    { english: "the latest", japanese: "late (遅い) の最上級" },
+    { english: "the biggest", japanese: "big (大きい) の最上級" },
+    { english: "the hottest", japanese: "hot (暑い・熱い) の最上級" },
+    { english: "the busiest", japanese: "busy (忙しい) の最上級" },
+    { english: "the earliest", japanese: "early (早く) の最上級" },
+    { english: "the easiest", japanese: "easy (簡単な) の最上級" },
+    { english: "the happiest", japanese: "happy (幸せな) の最上級" },
+    { english: "the heaviest", japanese: "heavy (重い) の最上級" },
+    { english: "the prettiest", japanese: "pretty (かわいい) の最上級" },
+    { english: "the most beautiful", japanese: "beautiful (美しい) の最上級" },
+    { english: "the most careful", japanese: "careful (注意深い) の最上級" },
+    { english: "the most delicious", japanese: "delicious (おいしい) の最上級" },
+    { english: "the most difficult", japanese: "difficult (難しい) の最上級" },
+    { english: "the most easily", japanese: "easily (簡単に) の最上級" },
+    { english: "the most exciting", japanese: "exciting (わくわくする) の最上級" },
+    { english: "the most expensive", japanese: "expensive (高価な) の最上級" },
+    { english: "the most famous", japanese: "famous (有名な) の最上級" },
+    { english: "the most important", japanese: "important (重要な) の最上級" },
+    { english: "the most interesting", japanese: "interesting (おもしろい) の最上級" },
+    { english: "the most popular", japanese: "popular (人気のある) の最上級" },
+    { english: "the most useful", japanese: "useful (便利な) の最上級" },
+    { english: "the best", japanese: "good (良い) / well (元気に・上手に) の最上級" },
+    { english: "the worst", japanese: "bad (悪い) / ill (病気の) の最上級" },
+    { english: "the most", japanese: "many (多い[数]) / much (多い[量]) の最上級" },
+    { english: "the least", japanese: "little (少しの[量]) の最上級" }
+];
+ 
+let currentCategory = ""; 
+let currentWords = []; 
+let currentIndex = 0; 
+let score = 0; 
+let isAnswered = false;
 
-    const questionEl = document.getElementById('question');
-    const choicesEl = document.getElementById('choices');
-    const resultEl = document.getElementById('result');
+function showCategoryScreen() {
+    document.getElementById("category-screen").style.display = "block";
+    document.getElementById("quiz-screen").style.display = "none"; 
+    document.getElementById("result-screen").style.display = "none";
+    
+    const catListDiv = document.getElementById("category-list");
+    catListDiv.innerHTML = "";
+    
+    // 特定の不規則動詞や比較級カテゴリを最後に持ってくる並び替え処理
+    const specialCats = ["不規則動詞 (過去形)", "不規則動詞 (過去分詞)", "形容詞・副詞 (比較級)", "形容詞・副詞 (最上級)"];
+    const allCats = Object.keys(wordData);
+    const sortedCategories = allCats.filter(cat => !specialCats.includes(cat));
+    specialCats.forEach(cat => {
+        if (allCats.includes(cat)) sortedCategories.push(cat);
+    });
 
-    function loadQuiz() {
-        if (currentQuiz < quizData.length) {
-            const currentData = quizData[currentQuiz];
-            questionEl.innerText = `${currentQuiz + 1}. ${currentData.question}`;
-            choicesEl.innerHTML = '';
-            
-            currentData.options.forEach(option => {
-                const button = document.createElement('button');
-                button.innerText = option;
-                button.classList.add('btn');
-                button.onclick = () => checkAnswer(option);
-                choicesEl.appendChild(button);
+    sortedCategories.forEach(category => {
+        const btn = document.createElement("button"); 
+        btn.className = "btn"; 
+        btn.innerText = category; 
+        btn.onclick = () => startQuiz(category); 
+        catListDiv.appendChild(btn);
+    });
+}
+
+function startQuiz(category) {
+    currentCategory = category; 
+    currentWords = [...wordData[category]].sort(() => Math.random() - 0.5);
+    if (currentWords.length > 10) { currentWords = currentWords.slice(0, 10); }
+    currentIndex = 0; 
+    score = 0;
+    document.getElementById("category-screen").style.display = "none";
+    document.getElementById("quiz-screen").style.display = "block"; 
+    showQuestion();
+}
+
+function showQuestion() {
+    isAnswered = false;
+    document.getElementById("next-btn").style.display = "none";
+    document.getElementById("result-message").innerText = "";
+    
+    const currentQuestion = currentWords[currentIndex];
+    document.getElementById("progress").innerText = `第 ${currentIndex + 1} 問 / 全 ${currentWords.length} 問`; 
+    document.getElementById("japanese-word").innerHTML = currentQuestion.japanese;
+    
+    const choices = makeChoices(currentQuestion.english, wordData[currentCategory]); 
+    const choicesListDiv = document.getElementById("choices-list"); 
+    choicesListDiv.innerHTML = "";
+    
+    choices.forEach(choice => {
+        const btn = document.createElement("button"); 
+        btn.className = "btn choice-btn"; 
+        
+        // --- 比較級・最上級の文字部分赤色化処理 ---
+        let htmlResult = choice;
+        if (currentCategory === "形容詞・副詞 (比較級)" || currentCategory === "形容詞・副詞 (最上級)") {
+            const irregulars = ["better", "worse", "less", "best", "worst", "least"];
+            let isIrregular = false;
+            irregulars.forEach(irr => {
+                if (choice === irr || choice === "the " + irr) {
+                    htmlResult = htmlResult.replace(irr, `<span style="color: red; font-weight: bold;">${irr}</span>`);
+                    isIrregular = true;
+                }
             });
-        } else {
-            questionEl.innerText = "テスト終了！";
-            choicesEl.innerHTML = '';
-            resultEl.innerText = "お疲れ様でした。";
+            if (!isIrregular) {
+                if (choice.includes("more ") || choice.includes("most ")) {
+                    htmlResult = htmlResult.replace("more", '<span style="color: red; font-weight: bold;">more</span>');
+                    htmlResult = htmlResult.replace("most", '<span style="color: red; font-weight: bold;">most</span>');
+                } else {
+                    if (choice.endsWith("est")) {
+                        if (choice.endsWith("ggest")) htmlResult = choice.slice(0, -5) + '<span style="color: red; font-weight: bold;">ggest</span>';
+                        else if (choice.endsWith("ttest")) htmlResult = choice.slice(0, -5) + '<span style="color: red; font-weight: bold;">ttest</span>';
+                        else htmlResult = choice.slice(0, -3) + '<span style="color: red; font-weight: bold;">est</span>';
+                    } else if (choice.endsWith("er")) {
+                        if (choice.endsWith("gger")) htmlResult = choice.slice(0, -4) + '<span style="color: red; font-weight: bold;">gger</span>';
+                        else if (choice.endsWith("tter")) htmlResult = choice.slice(0, -4) + '<span style="color: red; font-weight: bold;">tter</span>';
+                        else htmlResult = choice.slice(0, -2) + '<span style="color: red; font-weight: bold;">er</span>';
+                    }
+                }
+            }
         }
-    }
+        
+        btn.innerHTML = htmlResult; 
+        btn.onclick = () => checkAnswer(btn, choice, currentQuestion.english); 
+        choicesListDiv.appendChild(btn);
+    });
+}
 
-    function checkAnswer(selected) {
-        if (selected === quizData[currentQuiz].answer) {
-            alert("正解です！");
-        } else {
-            alert(`残念！正解は「${quizData[currentQuiz].answer}」です。`);
+function makeChoices(correctAnswer, allCategoryWords) {
+    const specialCategories = ["不規則動詞 (過去形)", "不規則動詞 (過去分詞)", "形容詞・副詞 (比較級)", "形容詞・副詞 (最上級)"];
+    
+    if (specialCategories.includes(currentCategory)) {
+        let finalChoices = [correctAnswer];
+        const currentWord = allCategoryWords.find(w => w.english === correctAnswer);
+        if (currentWord && currentWord.ing) {
+            finalChoices.push(currentWord.ing);
         }
-        currentQuiz++;
-        loadQuiz();
+        let otherWords = allCategoryWords.filter(w => w.english !== correctAnswer);
+        otherWords.sort(() => Math.random() - 0.5);
+        for (let i = 0; i < otherWords.length; i++) {
+            if (finalChoices.length >= 4) break;
+            finalChoices.push(otherWords[i].english);
+        }
+        while (finalChoices.length < 4) {
+            finalChoices.push("went", "made", "computer", "cheaper");
+        }
+        return finalChoices.sort(() => Math.random() - 0.5);
     }
+    
+    // 通常カテゴリ（曜日や月など）のダミー作成
+    const allEnglish = allCategoryWords.map(w => w.english); 
+    let dummies = allEnglish.filter(eng => eng !== correctAnswer); 
+    dummies.sort(() => Math.random() - 0.5); 
+    let chosenDummies = dummies.slice(0, 3);
+    while (chosenDummies.length < 3) {
+        chosenDummies.push("apple", "book", "desk", "test"); 
+    }
+    let finalChoices = [correctAnswer, ...chosenDummies.slice(0, 3)];
+    return finalChoices.sort(() => Math.random() - 0.5);
+}
 
-    loadQuiz();
+function checkAnswer(clickedBtn, selected, correct) {
+    if (isAnswered) return; 
+    isAnswered = true; 
+    const choiceButtons = document.querySelectorAll(".choice-btn"); 
+    const resultMsg = document.getElementById("result-message");
+    
+    if (selected === correct) {
+        clickedBtn.classList.add("correct"); 
+        resultMsg.innerText = "⭕ 正解！";
+        resultMsg.style.color = "#2ecc71"; 
+        score++; 
+    } else { 
+        clickedBtn.classList.add("incorrect"); 
+        resultMsg.innerText = `❌ 不正解！ 正解は: ${correct}`; 
+        resultMsg.style.color = "#e74c3c";
+        choiceButtons.forEach(btn => { 
+            // ボタン内のHTML（spanタグ）を無視して純粋なテキストで正解判定
+            if (btn.textContent.trim() === correct || btn.innerText.trim() === correct) { 
+                btn.classList.add("correct"); 
+            } 
+        }); 
+    }
+    document.getElementById("next-btn").style.display = "block";
+}
+
+function nextQuestion() { 
+    currentIndex++;
+    if (currentIndex < currentWords.length) { 
+        showQuestion(); 
+    } else { 
+        showResult(); 
+    } 
+}
+
+function showResult() {
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("result-screen").style.display = "block";
+    document.getElementById("final-score").innerText = `${currentWords.length} 問中 ${score} 問 正解！`;
+}
+
+function speakWord() {
+    if (!('speechSynthesis' in window)) {
+        alert('このブラウザは音声再生に対応していません。Chromeをご利用ください。');
+        return;
+    }
+    const currentQuestion = currentWords[currentIndex];
+    let word = currentQuestion.english.replace(/～/g, '').replace(/~/g, '').trim();
+    
+    if (word === "read" && currentQuestion.japanese.includes("過去")) {
+        word = "red";
+    }
+    speechSynthesis.cancel();
+    const uttr = new SpeechSynthesisUtterance(word);
+    uttr.lang = 'en-US';
+    uttr.rate = 1.0;
+    speechSynthesis.speak(uttr);
+}
+
+// アプリ起動
+showCategoryScreen();
 </script>
-
 </body>
 </html>
+

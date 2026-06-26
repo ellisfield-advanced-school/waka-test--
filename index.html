@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校生向け 英単語4択テスト</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .quiz-container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; background-color: #f9f9f9; }
+        .btn { display: block; width: 100%; margin: 10px 0; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; text-align: left; font-size: 16px; }
+        .btn:hover { background-color: #0056b3; }
+        #result { font-weight: bold; font-size: 18px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>英単語テスト（高校生レベル）</h2>
+    <div id="question" style="font-size: 24px; margin-bottom: 20px; font-weight: bold;"></div>
+    <div id="choices"></div>
+    <div id="result"></div>
+</div>
+
+<script>
+    // ★ここに高校生向けの単語、選択肢、正解（optionsの中の同じ文字列）を設定します
+    const quizData = [
+        {
+            question: "analyze",
+            options: ["を分析する", "を麻痺させる", "を統合する", "を誇張する"],
+            answer: "を分析する"
+        },
+        {
+            question: "consequence",
+            options: ["原因", "結果・影響", "意識", "動機"],
+            answer: "結果・影響"
+        },
+        {
+            question: "critical",
+            options: ["好意的な", "些細な", "批判的な・重大な", "楽観的な"],
+            answer: "批判的な・重大な"
+        }
+    ];
+
+    let currentQuiz = 0;
+
+    const questionEl = document.getElementById('question');
+    const choicesEl = document.getElementById('choices');
+    const resultEl = document.getElementById('result');
+
+    function loadQuiz() {
+        if (currentQuiz < quizData.length) {
+            const currentData = quizData[currentQuiz];
+            questionEl.innerText = `${currentQuiz + 1}. ${currentData.question}`;
+            choicesEl.innerHTML = '';
+            
+            currentData.options.forEach(option => {
+                const button = document.createElement('button');
+                button.innerText = option;
+                button.classList.add('btn');
+                button.onclick = () => checkAnswer(option);
+                choicesEl.appendChild(button);
+            });
+        } else {
+            questionEl.innerText = "テスト終了！";
+            choicesEl.innerHTML = '';
+            resultEl.innerText = "お疲れ様でした。";
+        }
+    }
+
+    function checkAnswer(selected) {
+        if (selected === quizData[currentQuiz].answer) {
+            alert("正解です！");
+        } else {
+            alert(`残念！正解は「${quizData[currentQuiz].answer}」です。`);
+        }
+        currentQuiz++;
+        loadQuiz();
+    }
+
+    loadQuiz();
+</script>
+
+</body>
+</html>

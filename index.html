@@ -392,12 +392,15 @@ function startQuiz(category) {
    currentCategory = category; 
    currentIndex = 0; 
    score = 0;
-
-   if (quizData[category]) {
-       // 語句整序・文章問題モード
-       isWordQuizMode = false;
-       currentQuestions = [...quizData[category]];
-   } else {
+if (quizData[category]) {
+    // 語句整序・文章問題モード
+    isWordQuizMode = false;
+    currentQuestions = quizData[category].map(q => ({
+        ...q,
+        words: q.words ? [...q.words].sort(() => Math.random() - 0.5) : q.words
+    }));
+}
+ else {
        // 英単語テストモード
        isWordQuizMode = true;
        currentQuestions = [...wordData[category]].sort(() => Math.random() - 0.5);

@@ -553,7 +553,7 @@ function renderChoicesUI() {
     // 正解のボタンを緑色で表示
     const buttons = choicesList.querySelectorAll("button");
     buttons.forEach(button => {
-        if (button.innerText === q.answer) {
+if (button.innerText.trim() === q.answer.trim()) {
             button.classList.add("correct");
         }
     });

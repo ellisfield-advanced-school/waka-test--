@@ -547,15 +547,25 @@ function renderChoicesUI() {
                 btn.classList.add("correct");
                 msg.innerHTML = `<span style="color:#2ecc71;">⭕ 正解！</span><br><b>正解文:</b> ${q.displayAnswer}<br><small>${q.explanation}</small>`;
             } else {
-                btn.classList.add("incorrect");
-                msg.innerHTML = `<span style="color:#e74c3c;">❌ 不正解...</span><br><b>正解:</b> ${q.displayAnswer}<br><small>${q.explanation}</small>`;
-            }
-            document.getElementById("next-btn").style.display = "block";
-        };
-        choicesList.appendChild(btn);
+    btn.classList.add("incorrect");
+    msg.innerHTML = `<span style="color:#e74c3c;">❌ 不正解...</span><br><b>正解:</b> ${q.displayAnswer}<br><small>${q.explanation}</small>`;
+
+    // 正解のボタンを緑色で表示
+    const buttons = choicesList.querySelectorAll("button");
+    buttons.forEach(button => {
+        if (button.innerText === q.answer) {
+            button.classList.add("correct");
+        }
     });
 }
 
+document.getElementById("next-btn").style.display = "block";
+                   };
+
+        choicesList.appendChild(btn);
+    });
+}
+           
 function makeChoices(correctAnswer, allCategoryWords) {
    const specialCategories = ["不規則動詞 (過去形)", "不規則動詞 (過去分詞)", "形容詞・副詞 (比較級)", "形容詞・副詞 (最上級)"];
     

@@ -815,7 +815,7 @@ word = word.replace(/～/g, '').replace(/~/g, '').trim();
    speechSynthesis.cancel();
    const uttr = new SpeechSynthesisUtterance(word);
    uttr.lang = 'en-US';
-   uttr.rate = 1.0;
+   uttr.rate = 0.85;
    speechSynthesis.speak(uttr);
 }
 

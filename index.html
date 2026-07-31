@@ -646,7 +646,16 @@ function speakWord() {
        return;
     }
    const currentQuestion = currentQuestions[currentIndex];
-   let word = currentQuestion.english.replace(/～/g, '').replace(/~/g, '').trim();
+
+let word = "";
+
+if (isWordQuizMode) {
+    word = currentQuestion.english;
+} else {
+    word = currentQuestion.displayAnswer;
+}
+
+word = word.replace(/～/g, '').replace(/~/g, '').trim();
     
    if (word === "read" && currentQuestion.japanese.includes("過去")) {
        word = "red";

@@ -503,7 +503,112 @@ const quizData = {
             displayAnswer: "The fact is that I don't have enough money.",
             explanation: "「The fact is that S V」で「実のところ/事実は〜である」を表します。"
         }
+    ],
+
+   "論理表現 P8": [
+        // --- 大問4 ---
+        {
+            page: 8, no: 1, type: "sort",
+            question: "父は毎晩，お風呂に入ってからテレビでニュースを見る。<br>My father takes a bath ( &nbsp; &nbsp; &nbsp; ) on TV every night. ※1語不要",
+            words: ["after", "watch", "watching", "the news"],
+            answer: "after watching the news",
+            displayAnswer: "My father takes a bath after watching the news on TV every night.",
+            explanation: "前置詞 after の後ろには動名詞（watching）を続けます。watch は不要です。<br>【和訳】父は毎晩、テレビでニュースを見た後にお風呂に入ります。"
+        },
+        {
+            page: 8, no: 2, type: "sort",
+            question: "彼女は彼のことが好きではないと言っている。<br>( &nbsp; &nbsp; &nbsp; ) like him.",
+            words: ["She", "says", "she", "doesn't"],
+            answer: "She says she doesn't",
+            displayAnswer: "She says she doesn't like him.",
+            explanation: "「She says (that) S V」の構造です。接続詞 that は省略されています。<br>【和訳】彼女は彼のことが好きではないと言っています。"
+        },
+        {
+            page: 8, no: 3, type: "sort",
+            question: "歯を磨いている間は，水を止めなさい。<br>Turn the water off ( &nbsp; &nbsp; &nbsp; ). ※1語不要",
+            words: ["while", "brush", "brushing", "your teeth"],
+            answer: "while brushing your teeth",
+            displayAnswer: "Turn the water off while brushing your teeth.",
+            explanation: "「while -ing」で「〜している間」を表します（主語+be動詞が省略された形）。brush は不要です。<br>【和訳】歯を磨いている間は水を止めなさい。"
+        },
+        {
+            page: 8, no: 4, type: "sort",
+            question: "良い天気なので，洗濯物がよく乾くでしょう。<br>( &nbsp; &nbsp; &nbsp; ) today, the laundry will dry well.",
+            words: ["Because", "the weather", "is", "good"],
+            answer: "Because the weather is good",
+            displayAnswer: "Because the weather is good today, the laundry will dry well.",
+            explanation: "「Because S V」で「〜なので/〜だから」という理由・原因を表します。<br>【和訳】今日は良い天気なので、洗濯物がよく乾くでしょう。"
+        },
+        {
+            page: 8, no: 5, type: "sort",
+            question: "もし彼が決心すれば，私は彼を支えるつもりだ。<br>( &nbsp; &nbsp; &nbsp; ), I'll support him.",
+            words: ["If", "he", "makes", "up", "his mind"],
+            answer: "If he makes up his mind",
+            displayAnswer: "If he makes up his mind, I'll support him.",
+            explanation: "「If S V」で条件を表し、「make up one's mind」で「決心する」を表します。<br>【和訳】もし彼が決心すれば、私は彼を支えるつもりです。"
+        },
+
+        // --- 大問5（語句整序化） ---
+        {
+            page: 8, no: 6, type: "sort",
+            question: "自分の部屋で勉強しているときに，父が私を呼んだ。<br>( &nbsp; &nbsp; &nbsp; ), my father called me.",
+            words: ["When", "I", "was", "studying", "in my room"],
+            answer: "When I was studying in my room",
+            displayAnswer: "When I was studying in my room, my father called me.",
+            explanation: "「When S + be動詞 + -ing」で「Sが〜していたときに」を表します。"
+        },
+        {
+            page: 8, no: 7, type: "sort",
+            question: "サラ (Sarah) は日本食が好きだけれども，納豆は好きではない。<br>Sarah doesn't like natto, ( &nbsp; &nbsp; &nbsp; ).",
+            words: ["though", "she", "likes", "Japanese food"],
+            answer: "though she likes Japanese food",
+            displayAnswer: "Sarah doesn't like natto, though she likes Japanese food.",
+            explanation: "「though S V」で「〜だけれども」という譲歩を表します。"
+        },
+        {
+            page: 8, no: 8, type: "sort",
+            question: "私たちが協力すれば，その計画は成功するでしょう。<br>( &nbsp; &nbsp; &nbsp; ), the plan will succeed.",
+            words: ["If", "we", "work", "together"],
+            answer: "If we work together",
+            displayAnswer: "If we work together, the plan will succeed.",
+            explanation: "「If S V」で「もし〜すれば」を表し、「work together」で「協力する」を表します。"
+        },
+
+        // --- 大問6（入試問題・選択問題） ---
+        {
+            page: 8, no: 9, type: "4choice",
+            question: "( &nbsp; &nbsp; &nbsp; ) に入る最も適切な語を選びなさい。（専修大学）<br>A: Why don't you have lunch with us?<br>B: Thanks, ( &nbsp; &nbsp; &nbsp; ) I have an appointment.",
+            choices: ["after", "because", "but", "if"],
+            answer: "but",
+            displayAnswer: "A: Why don't you have lunch with us? <br>B: Thanks, but I have an appointment.",
+            explanation: "「誘ってくれてありがとう、しかし約束があるのです」と丁寧に断る文脈のため、but（しかし）が正解です。<br>【和訳】A: 一緒に昼食を食べませんか。 B: ありがとう、でも約束があるんです。"
+        },
+        {
+            page: 8, no: 10, type: "4choice",
+            question: "( &nbsp; &nbsp; &nbsp; ) に入る最も適切な語を選びなさい。（会津大学）<br>( &nbsp; &nbsp; &nbsp; ) students pass the test or not depends on how hard they studied.",
+            choices: ["Whether", "Even", "What", "How"],
+            answer: "Whether",
+            displayAnswer: "Whether students pass the test or not depends on how hard they studied.",
+            explanation: "「Whether S V or not」で「SがVするかどうか」という名詞節を作り、文全体の主語になります。<br>【和訳】生徒が試験に合格するかどうかは、彼らがどれだけ熱心に勉強したかにかかっている。"
+        },
+        {
+            page: 8, no: 11, type: "4choice",
+            question: "( &nbsp; &nbsp; &nbsp; ) に入る最も適切な語を選びなさい。（自治医科大学）<br>The question is ( &nbsp; &nbsp; &nbsp; ) we have enough resources to sustain our society.",
+            choices: ["as", "if", "that", "whether"],
+            answer: "whether",
+            displayAnswer: "The question is whether we have enough resources to sustain our society.",
+            explanation: "「The question is whether ...」で「問題は〜かどうかだ」を表します。※補語の位置で or not がない文脈では whether が最も適しています。<br>【和訳】問題は、私たちの社会を維持するための十分な資源があるかどうかだ。"
+        },
+        {
+            page: 8, no: 12, type: "4choice",
+            question: "( &nbsp; &nbsp; &nbsp; ) に入る最も適切な語を選びなさい。（金沢工業大学）<br>( &nbsp; &nbsp; &nbsp; ) this car is very old, it still runs well.",
+            choices: ["Although", "Nonetheless", "Otherwise", "Regardless"],
+            answer: "Although",
+            displayAnswer: "Although this car is very old, it still runs well.",
+            explanation: "後ろに「S V（この車はとても古い）」が続いているため、接続詞の Although（〜であるけれども）が入ります。<br>【和訳】この車はとても古いが、まだ十分に走る。"
+        }
     ]
+   
 };
 
 let currentCategory = ""; 

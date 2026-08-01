@@ -512,6 +512,7 @@ const quizData = {
             question: "父は毎晩，お風呂に入ってからテレビでニュースを見る。<br>My father takes a bath ( &nbsp; &nbsp; &nbsp; ) on TV every night. ※1語不要",
             words: ["after", "watch", "watching", "the news"],
             answer: "after watching the news",
+            unusedCount: 1,
             displayAnswer: "My father takes a bath after watching the news on TV every night.",
             explanation: "前置詞 after の後ろには動名詞（watching）を続けます。watch は不要です。<br>【和訳】父は毎晩、テレビでニュースを見た後にお風呂に入ります。"
         },
@@ -528,6 +529,7 @@ const quizData = {
             question: "歯を磨いている間は，水を止めなさい。<br>Turn the water off ( &nbsp; &nbsp; &nbsp; ). ※1語不要",
             words: ["while", "brush", "brushing", "your teeth"],
             answer: "while brushing your teeth",
+            unusedCount: 1,
             displayAnswer: "Turn the water off while brushing your teeth.",
             explanation: "「while -ing」で「〜している間」を表します（主語+be動詞が省略された形）。brush は不要です。<br>【和訳】歯を磨いている間は水を止めなさい。"
         },
@@ -764,10 +766,16 @@ function checkSortAnswer() {
     if (isAnswered) return;
 
     const q = currentQuestions[currentIndex];
-    if (selectedWords.length < q.words.length) {
+   const requiredCount = q.words.length - (q.unusedCount || 0);
+
+if (selectedWords.length !== requiredCount) {
+    if (q.unusedCount) {
+        alert(`単語を ${requiredCount} 個選んで並べ替えてください。`);
+    } else {
         alert("すべての単語を並べ替えてください。");
-        return;
     }
+    return;
+} 
 
     isAnswered = true;
     const userAnsText = selectedWords.map(idx => q.words[idx]).join(" ");
